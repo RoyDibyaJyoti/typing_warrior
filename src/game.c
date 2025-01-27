@@ -81,7 +81,7 @@ Score play_game(){
     SDL_Rect shooter = {550, 720, 100, 50};
     SDL_Rect bullets[1000];
     int bulletCount = 0;
-    const int SHOOTER_SPEED = 5; // Adjust this value to control movement speed
+    const int SHOOTER_SPEED = 5;
 
     // Enemy setup
     Enemy enemy;
@@ -101,6 +101,9 @@ Score play_game(){
     const Uint32 SHOT_DELAY = 250; // Minimum delay between shots in milliseconds
 
     SDL_Rect wordRect = {550, 800, 0, 0};
+
+    // Add user input display position
+    SDL_Rect inputDisplayRect = {1100, 50, 0, 0};
 
     const char *scoreFile = "others/highestScore.txt";
     Score score = {
@@ -283,6 +286,19 @@ Score play_game(){
             }
         }
 
+        // Render user input text at top-right
+        SDL_Surface *inputSurface = TTF_RenderText_Blended(font, userInput, text_colour);
+        if (inputSurface) {
+            SDL_Texture *inputTexture = SDL_CreateTextureFromSurface(renderer, inputSurface);
+            inputDisplayRect.w = inputSurface->w;
+            inputDisplayRect.h = inputSurface->h;
+            inputDisplayRect.x = 1150 - inputSurface->w; // Right align
+            
+            SDL_RenderCopy(renderer, inputTexture, NULL, &inputDisplayRect);
+            SDL_FreeSurface(inputSurface);
+            SDL_DestroyTexture(inputTexture);
+        }
+
         // Render score
         SDL_Surface *pointsurface = TTF_RenderText_Blended(font, pointText, text_colour);
         SDL_Texture *pointTexture = SDL_CreateTextureFromSurface(renderer, pointsurface);
@@ -294,7 +310,7 @@ Score play_game(){
         render_button(renderer, &end);
         SDL_RenderPresent(renderer);
 
-        SDL_Delay(16); // Cap at roughly 60 FPS
+        SDL_Delay(16); //  60 FPS
     }
 
     if (score.score > score.high_score)
