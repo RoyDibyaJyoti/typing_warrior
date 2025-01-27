@@ -49,7 +49,7 @@ void draw_rounded_rect(SDL_Renderer* renderer, SDL_Rect* rect, int radius) {
 }
 
 
-void show_score(int score) {
+void show_score(Score score) {
     if (SDL_Init(SDL_INIT_EVERYTHING) != 0) {
         printf("SDL Initialization Error: %s\n", SDL_GetError());
         return;
@@ -99,7 +99,7 @@ void show_score(int score) {
         return;
     }
 
-    TTF_Font* font = TTF_OpenFont("others/my_font.otf", 50);
+    TTF_Font* font = TTF_OpenFont("others/my_font.otf", 30);
     if (!font) {
         printf("Failed to load font: %s\n", TTF_GetError());
         SDL_DestroyTexture(background_texture);
@@ -109,11 +109,14 @@ void show_score(int score) {
         return;
     }
 
-    char score_str[50];
-    sprintf(score_str, "Your score is:\n%10d", score);
+    char score_str[300];
+    snprintf(score_str, sizeof(score_str), 
+             "Game Over!\nFinal Points: %d\nCorrect Words: %d\nWrong Words: %d\nHighest Score: %d%s", 
+             score.score, score.correct_words, score.wrong_words, score.high_score, 
+             (score.score > score.high_score) ? "\nCongratulations! New High Score!" : "");
 
     SDL_Surface* surface_score = TTF_RenderText_Blended_Wrapped(font, score_str, (SDL_Color){0, 0, 0}, 1000);
-    SDL_Surface* surface_prompt = TTF_RenderText_Blended_Wrapped(font, "Press any key to\ngo to the main menu", (SDL_Color){0, 0, 0}, 1000);
+    SDL_Surface* surface_prompt = TTF_RenderText_Blended_Wrapped(font, "\n\n\nPress any key if you agree\nShawon sir and Taj sir are SHERA!!!", (SDL_Color){0, 0, 0}, 1000);
 
     if (!surface_score || !surface_prompt) {
         printf("Text Rendering Error: %s\n", TTF_GetError());
@@ -130,9 +133,9 @@ void show_score(int score) {
 
     SDL_Rect text_bg_rect = {
         250,
-        250, 
-        700, 
-        400  
+        200, 
+        750, 
+        500  
     };
 
     SDL_Rect rect_score = {

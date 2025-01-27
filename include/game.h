@@ -2,6 +2,7 @@
 
 #define GAME_H
 #include "all_headers.h"
+#include "score.h"
 
 typedef struct {
     SDL_Rect rect;
@@ -10,5 +11,5 @@ typedef struct {
 
 void resetEnemy(Enemy* enemy);
 int loadWords(const char *filename, char wordList[][50], int maxWords);
-int play_game();
+Score play_game();
 #endif

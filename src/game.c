@@ -1,6 +1,7 @@
 #include "game.h"
 #include "menu.h"
 #include "button.h"
+#include "score.h"
 
 void resetEnemy(Enemy *enemy)
 {
@@ -31,22 +32,41 @@ int loadWords(const char *filename, char wordList[][50], int maxWords)
     return count;
 }
 
-int play_game()
-{
+int readHighestScore(const char *filename) {
+    FILE *file = fopen(filename, "r");
+    if (!file)
+    {
+        return 0;
+    }
+
+    int highestScore = 0;
+    if (fscanf(file, "%d", &highestScore) != 1)
+    {
+        highestScore = 0;
+    }
+    fclose(file);
+
+    return highestScore;
+}
+
+void writeHighestScore(const char *filename, int score){
+    FILE *file = fopen(filename, "w");
+    if (file)
+    {
+        fprintf(file, "%d", score);
+        fclose(file);
+    }
+}
+
+Score play_game(){
     // Initialization
     SDL_Init(SDL_INIT_VIDEO);
     TTF_Init();
     IMG_Init(IMG_INIT_PNG);
 
-    SDL_Window *window = SDL_CreateWindow(
-        "Typing Warrior",
-        SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
-        1200, 800,
-        SDL_WINDOW_SHOWN
-    );
+    SDL_Window *window = SDL_CreateWindow("Typing Warrior", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 1200, 800, 0);
     SDL_Renderer *renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
     SDL_SetRenderDrawColor(renderer, 34, 97, 199, 255);
-    Button end = create_button(renderer, "End Game", "img/btn.png", "img/btn_hover.png", 950, 700);
 
     TTF_Font *font = TTF_OpenFont("others/my_font.otf", 50);
     SDL_Color text_colour = {230, 209, 165, 255};
@@ -55,10 +75,13 @@ int play_game()
     SDL_Texture *enemyTexture = IMG_LoadTexture(renderer, "img/asteroid.png");
     SDL_Texture *shooterTexture = IMG_LoadTexture(renderer, "img/_ship.png");
 
+    Button end = create_button(renderer, "End Game", "img/btn.png", "img/btn_hover.png", 950, 700);
+
     // Shooter setup
     SDL_Rect shooter = {550, 720, 100, 50};
     SDL_Rect bullets[1000];
     int bulletCount = 0;
+    const int SHOOTER_SPEED = 5; // Adjust this value to control movement speed
 
     // Enemy setup
     Enemy enemy;
@@ -72,12 +95,20 @@ int play_game()
     char currentWord[50] = "";
     char userInput[50] = "";
     char pointText[50] = "Points: 0";
-    int points = 0, lives = 3, speed = 1;
-    bool typingMode = false, running = true;int t =200;
-
-    srand((unsigned int)time(NULL));
+    int lives = 3, speed = 1;
+    bool typingMode = false, running = true;
+    Uint32 lastShot = 0;
+    const Uint32 SHOT_DELAY = 250; // Minimum delay between shots in milliseconds
 
     SDL_Rect wordRect = {550, 800, 0, 0};
+
+    const char *scoreFile = "others/highestScore.txt";
+    Score score = {
+        .correct_words = 0,
+        .high_score = readHighestScore(scoreFile),
+        .wrong_words = 0,
+        .score = 0
+    };
 
     while (running)
     {
@@ -88,35 +119,25 @@ int play_game()
             {
                 running = false;
             }
-            else if (event.type == SDL_KEYDOWN)
+            else if (event.type == SDL_KEYDOWN && !typingMode)
             {
-                if (!typingMode)
+                if (event.key.keysym.sym == SDLK_SPACE)
                 {
-                    if (event.key.keysym.sym == SDLK_SPACE)
+                    Uint32 currentTime = SDL_GetTicks();
+                    if (currentTime - lastShot >= SHOT_DELAY && bulletCount < 1000)
                     {
-                        if (bulletCount < 1000)
-                        {
-                            bullets[bulletCount].x = shooter.x + shooter.w / 2 - 5;
-                            bullets[bulletCount].y = shooter.y;
-                            bullets[bulletCount].w = 10;
-                            bullets[bulletCount].h = 20;
-                            bulletCount++;
-                        }
-                    }
-                    else if (event.key.keysym.sym == SDLK_LEFT)
-                    {
-                        shooter.x -= 20;
-                        if (shooter.x < 0)
-                            shooter.x = 0;
-                    }
-                    else if (event.key.keysym.sym == SDLK_RIGHT)
-                    {
-                        shooter.x += 20;
-                        if (shooter.x > 1100)
-                            shooter.x = 1100;
+                        bullets[bulletCount].x = shooter.x + shooter.w / 2 - 5;
+                        bullets[bulletCount].y = shooter.y;
+                        bullets[bulletCount].w = 10;
+                        bullets[bulletCount].h = 20;
+                        bulletCount++;
+                        lastShot = currentTime;
                     }
                 }
-                else if (event.key.keysym.sym == SDLK_BACKSPACE && strlen(userInput) > 0)
+            }
+            else if (event.type == SDL_KEYDOWN && typingMode)
+            {
+                if (event.key.keysym.sym == SDLK_BACKSPACE && strlen(userInput) > 0)
                 {
                     userInput[strlen(userInput) - 1] = '\0';
                 }
@@ -124,40 +145,49 @@ int play_game()
             else if (event.type == SDL_TEXTINPUT && typingMode)
             {
                 strcat(userInput, event.text.text);
-                    printf("Current Word: %s, User Input: %s\n", currentWord, userInput);
                 if (strcmp(userInput, currentWord) == 0)
                 {
-                    points += (wordRect.y)/25;
-                    snprintf(pointText, sizeof(pointText), "Points: %d", points);
+                    score.score += (wordRect.y) / 25;
+                    score.correct_words++;
+                    snprintf(pointText, sizeof(pointText), "Points: %d", score.score);
                     typingMode = false;
                     currentWord[0] = '\0';
-                    userInput[0] = '\0'; 
-                    if(points>700)speed++;
-                    else if(points>650 && points<660)speed++;
-                    else if(points>600 && points<620)speed++;
-                    else if(points>550 && points<560)speed++;
-                    else if(points>500 && points<520)speed++;
-                    else if(points>450 && points<460)speed++;
-                    else if(points>400 && points<420)speed++;
-                    else if(points>350 && points<360)speed++;
-                    else if(points>300 && points<320)speed++;
-                    else if(points>250 && points<260)speed++;
-                    else if(points>200 && points<220)speed++;
-                    else if(points>150 && points<160)speed++;
-                    else if(points>100 && points<120)speed++;
-                    else if(points>50 && points<60)speed++;
-
-                    resetEnemy(&enemy); // Reset the enemy after typing
+                    userInput[0] = '\0';
+                    if(score.score > 50) speed = 1 + score.score / 50; // Smoother speed progression
+                    resetEnemy(&enemy);
+                }
+                else if (strlen(userInput) >= strlen(currentWord))
+                {
+                    score.score -= 10;
+                    score.wrong_words++;
+                    snprintf(pointText, sizeof(pointText), "Points: %d", score.score);
+                    typingMode = false;
+                    currentWord[0] = '\0';
+                    userInput[0] = '\0';
+                    resetEnemy(&enemy);
                 }
             }
-            if(handle_button_event(&end, event)) return points;
+            if(handle_button_event(&end, event)) return score;
         }
-        // Game logic
+
+        // Handle keyboard state for continuous movement
+        const Uint8 *keyState = SDL_GetKeyboardState(NULL);
+        if (!typingMode) {
+            if (keyState[SDL_SCANCODE_LEFT] || keyState[SDL_SCANCODE_A]) {
+                shooter.x -= SHOOTER_SPEED;
+                if (shooter.x < 0) shooter.x = 0;
+            }
+            if (keyState[SDL_SCANCODE_RIGHT] || keyState[SDL_SCANCODE_D]) {
+                shooter.x += SHOOTER_SPEED;
+                if (shooter.x > 1100) shooter.x = 1100;
+            }
+        }
+
+        // Update bullets
         for (int i = 0; i < bulletCount; i++)
         {
             bullets[i].y -= 10;
         }
-
         int newBulletCount = 0;
         for (int i = 0; i < bulletCount; i++)
         {
@@ -167,6 +197,8 @@ int play_game()
             }
         }
         bulletCount = newBulletCount;
+
+        // Enemy logic
         if (enemy.active)
         {
             enemy.rect.y += speed;
@@ -177,7 +209,7 @@ int play_game()
                     enemy.active = false;
                     typingMode = true;
                     strcpy(currentWord, wordList[rand() % wordCount]);
-                    bulletCount--; // Remove the bullet
+                    bulletCount--;
                     for (int j = i; j < bulletCount; j++)
                     {
                         bullets[j] = bullets[j + 1];
@@ -205,9 +237,9 @@ int play_game()
             resetEnemy(&enemy);
             enemy.active = true;
         }
+
         // Rendering
         SDL_RenderClear(renderer);
-
         SDL_RenderCopy(renderer, background, NULL, NULL);
 
         if (enemy.active)
@@ -236,7 +268,7 @@ int play_game()
             SDL_Surface *surface = TTF_RenderText_Blended(font, currentWord, text_colour);
             SDL_Texture *wordTexture = SDL_CreateTextureFromSurface(renderer, surface);
 
-            wordRect.y -= speed; // Move the word upward
+            wordRect.y -= speed;
             SDL_RenderCopy(renderer, wordTexture, NULL, &wordRect);
 
             SDL_DestroyTexture(wordTexture);
@@ -251,21 +283,24 @@ int play_game()
             }
         }
 
-        SDL_Surface *pointSurface = TTF_RenderText_Blended(font, pointText, text_colour);
-        SDL_Texture *pointTexture = SDL_CreateTextureFromSurface(renderer, pointSurface);
-        SDL_Rect pointRect = {10, 10, pointSurface->w, pointSurface->h};
+        // Render score
+        SDL_Surface *pointsurface = TTF_RenderText_Blended(font, pointText, text_colour);
+        SDL_Texture *pointTexture = SDL_CreateTextureFromSurface(renderer, pointsurface);
+        SDL_Rect pointRect = {10, 50, pointsurface->w, pointsurface->h};
         SDL_RenderCopy(renderer, pointTexture, NULL, &pointRect);
         SDL_DestroyTexture(pointTexture);
-        SDL_FreeSurface(pointSurface);
+        SDL_FreeSurface(pointsurface);
+        
         render_button(renderer, &end);
-
         SDL_RenderPresent(renderer);
 
-        SDL_Delay(25);
+        SDL_Delay(16); // Cap at roughly 60 FPS
     }
 
-    printf("Final Points: %d\n", points);
-    // set_score(points);
+    if (score.score > score.high_score)
+    {
+        writeHighestScore(scoreFile, score.score);
+    }
 
     // Cleanup
     destroy_button(&end);
@@ -279,7 +314,5 @@ int play_game()
     IMG_Quit();
     SDL_Quit();
 
-    // show_menu();
-
-    return points;
+    return score;
 }
