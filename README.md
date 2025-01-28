@@ -201,7 +201,8 @@ Special thanks to:
 - Shawon sir and Taj sir
 - SDL2 development team
 
-Our Team:
-- Efat Ara Belly     (2307004)
-- MD. Farhan Israq   (2307012)
-- Dibya Jyoti Roy    (2307022)
+
+## Our Team:
+- [Efat Ara Belly (2307004)](https://github.com/belllii)
+- [MD. Farhan Israq (2307012)](https://github.com/Mr-farhan404)
+- [Dibya Jyoti Roy (2307022)](https://github.com/RoyDibyaJyoti)
