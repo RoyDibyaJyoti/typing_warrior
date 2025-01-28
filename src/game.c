@@ -81,7 +81,7 @@ Score play_game(){
     SDL_Rect shooter = {550, 720, 100, 50};
     SDL_Rect bullets[1000];
     int bulletCount = 0;
-    const int SHOOTER_SPEED = 5;
+    const int SHOOTER_SPEED = 10;
 
     // Enemy setup
     Enemy enemy;
