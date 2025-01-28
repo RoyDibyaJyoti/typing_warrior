@@ -17,9 +17,9 @@ A space-themed typing game where you defend against incoming asteroids by typing
 To build and run Typing Warrior, you need:
 
 - SDL2 library and its extensions:
-  - SDL2_image
-  - SDL2_ttf
-  - SDL2_mixer
+   - SDL2_image
+   - SDL2_ttf
+   - SDL2_mixer
 - C compiler (gcc recommended)
 - Make (for building)
 
@@ -46,30 +46,30 @@ typing-warrior/
 │   ├── btn.png
 │   └── btn_hover.png
 └── others/
-    ├── my_font.otf
-    ├── words.txt
-    └── highestScore.txt
+      ├── my_font.otf
+      ├── words.txt
+      └── highestScore.txt
 ```
 
 ## 🎯 Gameplay
 
 1. **Main Menu**
-   - Choose between Play and Exit options
-   - Simple and intuitive interface
+    - Choose between Play and Exit options
+    - Simple and intuitive interface
 
 2. **Game**
-   - Control your spacecraft with A/D or Left/Right arrow keys
-   - Press SPACE to shoot at asteroids
-   - Type the displayed words correctly to destroy asteroids
-   - Each successful hit increases your score
-   - Missing words or letting asteroids pass reduces lives
-   - Game ends when you run out of lives
+    - Control your spacecraft with A/D or Left/Right arrow keys
+    - Press SPACE to shoot at asteroids
+    - Type the displayed words correctly to destroy asteroids
+    - Each successful hit increases your score
+    - Missing words or letting asteroids pass reduces lives
+    - Game ends when you run out of lives
 
 3. **Scoring System**
-   - Points awarded based on word position when destroyed
-   - Higher points for destroying asteroids quickly
-   - Score penalties for incorrect words
-   - High score system tracks your best performance
+    - Points awarded based on word position when destroyed
+    - Higher points for destroying asteroids quickly
+    - Score penalties for incorrect words
+    - High score system tracks your best performance
 
 ## 🚀 Controls
 
@@ -79,86 +79,183 @@ typing-warrior/
 - **Keyboard**: Type words to destroy asteroids
 - **ESC**: Return to menu
 
-## 🔧 Installation on MacBook
+## 🔧 Installation
 
-### Prerequisites
+### MacBook
+
+#### Prerequisites
 
 First, ensure you have the following installed on your MacBook:
 
 1. **Xcode Command Line Tools**
-   ```bash
-   xcode-select --install
-   ```
+    ```bash
+    xcode-select --install
+    ```
 
 2. **Homebrew** (Package Manager)
-   ```bash
-   /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
-   ```
+    ```bash
+    /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+    ```
 
-### Installing Dependencies
+#### Installing Dependencies
 
 1. Install SDL2 and required libraries using Homebrew:
-   ```bash
-   brew install sdl2 sdl2_image sdl2_ttf sdl2_mixer
-   ```
-   
-   Or use the provided make command:
-   ```bash
-   make install-deps
-   ```
+    ```bash
+    brew install sdl2 sdl2_image sdl2_ttf sdl2_mixer
+    ```
+    
+    Or use the provided make command:
+    ```bash
+    make install-deps
+    ```
 
-### Building the Game
+#### Building the Game
 
 1. Clone the repository:
-   ```bash
-   git clone [repository-url]
-   cd typing-warrior
-   ```
+    ```bash
+    git clone https://github.com/RoyDibyaJyoti/typing_warrior
+    cd typing-warrior
+    ```
 
 2. Build the game using make:
-   ```bash
-   make
-   ```
+    ```bash
+    make
+    ```
 
-### Running the Game
+#### Running the Game
 
 After successful compilation, run the game using:
 ```bash
 ./typing_warrior
 ```
 
-### Troubleshooting
+#### Troubleshooting
 
 If you encounter any issues:
 
 1. **SDL2 Header Files Not Found**
-   - Verify SDL2 installation:
-     ```bash
-     brew list sdl2
-     brew list sdl2_image
-     brew list sdl2_ttf
-     brew list sdl2_mixer
-     ```
-   - Try reinstalling the libraries:
-     ```bash
-     brew reinstall sdl2 sdl2_image sdl2_ttf sdl2_mixer
-     ```
+    - Verify SDL2 installation:
+       ```bash
+       brew list sdl2
+       brew list sdl2_image
+       brew list sdl2_ttf
+       brew list sdl2_mixer
+       ```
+    - Try reinstalling the libraries:
+       ```bash
+       brew reinstall sdl2 sdl2_image sdl2_ttf sdl2_mixer
+       ```
 
 2. **Compilation Errors**
-   - Make sure all dependencies are properly installed
-   - Check if Xcode Command Line Tools are installed correctly
-   - Try cleaning and rebuilding:
-     ```bash
-     make clean
-     make
-     ```
+    - Make sure all dependencies are properly installed
+    - Check if Xcode Command Line Tools are installed correctly
+    - Try cleaning and rebuilding:
+       ```bash
+       make clean
+       make
+       ```
 
 3. **Library Linking Issues**
-   - Verify the library paths:
-     ```bash
-     brew --prefix sdl2
-     ```
-   - Make sure the paths in the Makefile match your system
+    - Verify the library paths:
+       ```bash
+       brew --prefix sdl2
+       ```
+    - Make sure the paths in the Makefile match your system
+
+### Windows
+
+#### Prerequisites
+
+1. **MinGW** (Minimalist GNU for Windows)
+    - Download and install from [MinGW](http://www.mingw.org/)
+
+2. **SDL2 Development Libraries**
+    - Download SDL2, SDL2_image, SDL2_ttf, and SDL2_mixer development libraries from [libsdl.org](https://www.libsdl.org/)
+
+#### Installing Dependencies
+
+1. Extract the SDL2 libraries and place them in a known directory.
+
+#### Building the Game
+
+1. Clone the repository:
+    ```bash
+    git clone https://github.com/RoyDibyaJyoti/typing_warrior
+    cd typing-warrior
+    ```
+
+2. Modify the Makefile to include the paths to the SDL2 libraries:
+    ```makefile
+    INCLUDES = -I<path-to-SDL2-include>
+    LIBS = -L<path-to-SDL2-lib> -lSDL2 -lSDL2_image -lSDL2_ttf -lSDL2_mixer
+    ```
+
+3. Build the game using make:
+    ```bash
+    make
+    ```
+
+#### Running the Game
+
+After successful compilation, run the game using:
+```bash
+./typing_warrior.exe
+```
+
+### Linux
+
+#### Prerequisites
+
+1. **Build Essentials**
+    ```bash
+    sudo apt-get install build-essential
+    ```
+
+2. **SDL2 Development Libraries**
+    ```bash
+    sudo apt-get install libsdl2-dev libsdl2-image-dev libsdl2-ttf-dev libsdl2-mixer-dev
+    ```
+
+#### Installing Dependencies
+
+1. Install SDL2 and required libraries using apt-get:
+    ```bash
+    sudo apt-get install libsdl2-dev libsdl2-image-dev libsdl2-ttf-dev libsdl2-mixer-dev
+    ```
+
+#### Building the Game
+
+1. Clone the repository:
+    ```bash
+    git clone https://github.com/RoyDibyaJyoti/typing_warrior
+    cd typing-warrior
+    ```
+
+2. Build the game using make:
+    ```bash
+    make
+    ```
+
+#### Running the Game
+
+After successful compilation, run the game using:
+```bash
+./typing_warrior
+```
+
+### Makefile Changes
+
+For Windows:
+```makefile
+INCLUDES = -I<path-to-SDL2-include>
+LIBS = -L<path-to-SDL2-lib> -lSDL2 -lSDL2_image -lSDL2_ttf -lSDL2_mixer
+```
+
+For Linux:
+```makefile
+INCLUDES = `sdl2-config --cflags`
+LIBS = `sdl2-config --libs` -lSDL2_image -lSDL2_ttf -lSDL2_mixer
+```
 
 ### Directory Structure
 
@@ -166,8 +263,8 @@ If you encounter any issues:
 typing-warrior/
 ├── src/               # Source files
 ├── include/           # Header files
-├── img/              # Game images
-└── others/           # Resources (font, word list)
+├── img/               # Game images
+└── others/            # Resources (font, word list)
 ```
 
 ### Cleaning Build Files
@@ -176,7 +273,6 @@ To remove the compiled executable:
 ```bash
 make clean
 ```
-
 
 ## 🎨 Game Assets
 
@@ -193,10 +289,10 @@ Feel free to fork the repository and submit pull requests. For major changes, pl
 ## 🎮 Game Screenshots
 
 <div style="display: flex; flex-wrap: wrap; justify-content: space-between;">
-   <img src="ss/menu.png" alt="menu" style="width: 48%;">
-   <img src="ss/main_1.png" alt="main" style="width: 48%;">
-   <img src="ss/main_2.png" alt="main" style="width: 48%;">
-   <img src="ss/score.png" alt="score board" style="width: 48%;">
+    <img src="ss/menu.png" alt="menu" style="width: 48%;">
+    <img src="ss/main_1.png" alt="main" style="width: 48%;">
+    <img src="ss/main_2.png" alt="main" style="width: 48%;">
+    <img src="ss/score.png" alt="score board" style="width: 48%;">
 </div>
 
 ## 🙏 Acknowledgments
@@ -204,7 +300,6 @@ Feel free to fork the repository and submit pull requests. For major changes, pl
 Special thanks to:
 - Shawon sir and Taj sir
 - SDL2 development team
-
 
 ## Our Team:
 - [Efat Ara Belly (2307004)](https://github.com/belllii)
