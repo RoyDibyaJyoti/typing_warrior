@@ -192,8 +192,12 @@ Feel free to fork the repository and submit pull requests. For major changes, pl
 
 ## 🎮 Game Screenshots
 
-![alt text](ss/menu.png "menu") ![alt text](ss/main_1.png "main")
-![alt text](ss/main_2.png "main") ![alt text](ss/score.png "score board")
+<div style="display: flex; flex-wrap: wrap; justify-content: space-between;">
+   <img src="ss/menu.png" alt="menu" style="width: 48%;">
+   <img src="ss/main_1.png" alt="main" style="width: 48%;">
+   <img src="ss/main_2.png" alt="main" style="width: 48%;">
+   <img src="ss/score.png" alt="score board" style="width: 48%;">
+</div>
 
 ## 🙏 Acknowledgments
 
